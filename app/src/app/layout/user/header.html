@@ -1,0 +1,146 @@
+<!-- Main navbar -->
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-header">
+        <a class="navbar-brand" ui-sref="org.projects.list({organizationId: $root.session.org_id})" style="font-size: 28px;">
+            <i class="icon-steam2"></i>
+            <span style="font-size: 22px;">DAgent</span>
+        </a>
+        <ul class="nav navbar-nav pull-right visible-xs-block">
+            <li><a data-toggle="collapse" data-target="#navbar-mobile"><i class="icon-tree5"></i></a></li>
+        </ul>
+    </div>
+
+    <div class="navbar-collapse collapse" id="navbar-mobile">
+        <ul class="nav navbar-nav">
+            <li class="dropdown dropdown-user">
+                <a class="dropdown-toggle" data-toggle="dropdown">
+                    <!--<div ng-if="$stateParams.projectId" class="awsc-service-icon mt-10" style="background-position: -0px 0px">&nbsp;</div>-->
+                    <span class="ml-20">
+                        <!--<notag ng-if="$stateParams.projectId">Amazon EC2</notag>-->
+                        <!--<notag ng-if="!$stateParams.projectId"><i class="icon-office position-left"></i>Projects</notag>-->
+                        <notag><i class="icon-office position-left"></i>Projects</notag>
+                    </span>
+                    <i class="caret"></i>
+                </a>
+                <ul class="dropdown-menu top-project-menu">
+                    <!--<li ng-if="$stateParams.projectId"><div class="dropdown-content-heading">Current Project</div> </li>-->
+                    <!--<li ng-if="$stateParams.projectId"><a ui-sref="project.overview"><div class="awsc-service-icon" style="background-position: -0px 0px">&nbsp;</div><div class="serviceName">Amazon EC2</div></a></li>-->
+                    <!--<li ng-if="$stateParams.projectId" role="separator" class="divider"></li>-->
+                    <!--<li><div class="dropdown-content-heading">Recent Projects</div> </li>-->
+                    <li ng-repeat="row in $root.session.projects track by $index">
+                        <a ui-sref="project.overview({projectId: row.id})">
+                            <img class="img-circle img-xs bg-grey-300" ng-src='{{row.logo}}' style="width: 20px; height: 20px" alt="" ng-if="row.logo">
+                            <span class="btn bg-warning-400 btn-rounded btn-icon btn-xs mr-10" ng-if="!row.logo">
+                                <span class="letter-icon text-uppercase">{{row.name.slice(0,1)}}</span>
+                            </span>
+                            {{row.name}}
+                        </a>
+                    </li>
+                    <li role="separator" class="divider"></li>
+                    <li class="p-5 no-padding-top no-padding-bottom"><button class="btn btn-block bg-teal-400" ui-sref="org.projects.list">Show All Projects</button></li>
+                    <li class="p-5 no-padding-top no-padding-bottom"><button class="btn btn-block bg-info" ui-sref="org.projects.create">Add new Project</button></li>
+                </ul>
+            </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <!--<li class="dropdown">-->
+                <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown">-->
+                    <!--<i class="icon-three-bars"></i>-->
+                    <!--<span class="visible-xs-inline-block position-right">Activities</span>-->
+                    <!--<span class="badge bg-warning-400">4</span>-->
+                <!--</a>-->
+                <!--<div class="dropdown-menu dropdown-content">-->
+                    <!--<div class="dropdown-content-heading">-->
+                        <!--Activities-->
+                        <!--<ul class="icons-list">-->
+                            <!--<li><a href="#"><i class="icon-sync"></i></a></li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                    <!--<ul class="media-list dropdown-content-body width-350">-->
+                        <!--<li class="media">-->
+                            <!--<div class="media-left">-->
+                                <!--<a href="#" class="btn border-primary text-primary btn-flat btn-rounded btn-icon btn-sm"><i class="icon-git-pull-request"></i></a>-->
+                            <!--</div>-->
+                            <!--<div class="media-body">-->
+                                <!--Deployed build number <a href="#">123</a> of <a href="#">Api</a> component of a project <a href="#">Lorem</a>-->
+                                <!--<div class="media-annotation">4 minutes ago</div>-->
+                            <!--</div>-->
+                        <!--</li>-->
+                        <!--<li class="media">-->
+                            <!--<div class="media-left">-->
+                                <!--<a href="#" class="btn border-warning text-warning btn-flat btn-rounded btn-icon btn-sm"><i class="icon-git-commit"></i></a>-->
+                            <!--</div>-->
+                            <!--<div class="media-body">-->
+                                <!--Build (<a href="#">123</a>) created for <a href="#">Api</a> component of a project <a href="#">Lorem</a>-->
+                                <!--<div class="media-annotation">36 minutes ago</div>-->
+                            <!--</div>-->
+                        <!--</li>-->
+                        <!--<li class="media">-->
+                            <!--<div class="media-left">-->
+                                <!--<a href="#" class="btn border-info text-info btn-flat btn-rounded btn-icon btn-sm"><i class="icon-git-branch"></i></a>-->
+                            <!--</div>-->
+                            <!--<div class="media-body">-->
+                                <!--<a href="#">Chris Arney</a> created a new <span class="text-semibold">Design</span> branch-->
+                                <!--<div class="media-annotation">2 hours ago</div>-->
+                            <!--</div>-->
+                        <!--</li>-->
+                        <!--<li class="media">-->
+                            <!--<div class="media-left">-->
+                                <!--<a href="#" class="btn border-success text-success btn-flat btn-rounded btn-icon btn-sm"><i class="icon-git-merge"></i></a>-->
+                            <!--</div>-->
+                            <!--<div class="media-body">-->
+                                <!--<a href="#">Eugene Kopyov</a> merged <span class="text-semibold">Master</span> and <span class="text-semibold">Dev</span> branches-->
+                                <!--<div class="media-annotation">Dec 18, 18:36</div>-->
+                            <!--</div>-->
+                        <!--</li>-->
+                    <!--</ul>-->
+                    <!--<div class="dropdown-content-footer">-->
+                        <!--<a data-popup="tooltip" title="All activities"><i class="icon-menu display-block"></i></a>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</li>-->
+            <li class="dropdown dropdown-user collapse">
+                <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                    <img class="img-circle bg-grey-300" src="{{$root.session.org_logo}}" alt="" ng-if="$root.session.org_logo">
+                    <span class="btn bg-warning-400 btn-rounded btn-icon btn-xs mr-10" ng-if="!$root.session.org_logo">
+                        <span class="letter-icon text-uppercase">{{$root.session.org_name.slice(0,1)}}</span>
+                    </span>
+                    <span>{{$root.session.org_name}}</span>
+                    <i class="caret"></i>
+                </a>
+                <ul class="dropdown-menu">
+                    <li ng-repeat="row in $root.session.organizations track by $index">
+                        <a ui-sref="org.projects.list({organizationId:row.organization_id})">
+                            <img class="img-circle img-xs bg-grey-300" ng-src='{{row.logo}}' style="width: 20px; height: 20px" alt="" ng-if="row.logo">
+                            <span class="btn bg-warning-400 btn-rounded btn-icon btn-xs mr-10" ng-if="!row.logo">
+                                    <span class="letter-icon text-uppercase">{{row.name.slice(0,1)}}</span>
+                            </span>
+                            {{row.name}}
+                        </a>
+                    </li>
+                    <li role="separator" class="divider"></li>
+                    <li class="p-5 no-padding-top no-padding-bottom"><button class="btn btn-block bg-teal-400" ui-sref="org.add">Add New Organisation</button></li>
+                </ul>
+            </li>
+            <li class="dropdown dropdown-user">
+                <a class="dropdown-toggle" data-toggle="dropdown">
+                    <div class="pull-left" style="min-width: 28px;margin-top: 2px;">
+                        <span class="btn bg-warning-600 btn-rounded btn-icon btn-xs" ng-if="!$root.session.profile_pic">
+                                <span class="letter-icon">{{$root.session.name.slice(0,1)}}</span>
+                        </span>
+                        <img ng-src='{{$root.session.profile_pic}}' alt="" ng-if="$root.session.profile_pic">
+                    </div>
+                    <span ng-bind-template="{{$root.session.name}}"></span>
+                    <i class="caret"></i>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a ui-sref="org.users.profile()"><i class="icon-user-tie"></i> My Profile</a></li>
+                    <!--<li><a><i class="icon-cog5"></i> My Settings</a></li>-->
+                    <li class="divider"></li>
+                    <li><a ng-click="logout()" ng-controller="AuthController"><i class="icon-switch2"></i> Logout</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- /main navbar -->

@@ -1,0 +1,434 @@
+<div class="clearfix container" ng-controller="UserController" ng-init="init();getMetaData();getUserData()">
+    <div class="row" cg-busy="{promise: profileBusy}">
+    <div class="col-sm-12 pt20 pb20">
+        <div class="col-sm-8 pln">
+            <div class="clearfix basic-info-wrapper">
+                <div class="col-sm-3">
+                    <div class="profile-pic-container position-relative">
+                    <img class="img-responsive" ng-src="{{user.profile_pic_url ? user.profile_pic_url : 'assets/img/avatar.jpeg'}}" alt="" />
+                        <div class="change-profile-pic-wrapper text-center" ng-if="!($root.isPublicView || $root.isPrivateView)">
+                            <div ngf-select
+                                 ng-model="files"
+                                 ngf-change="uploadProfileFile($files)"
+                                 class="drop-box drag-drop-container cursor-hover text-center border border-lg border-dashed p-20 cursor-pointer"
+                                 ngf-drag-over-class="dragover" ngf-multiple="false" ngf-allow-dir="false"
+                                 accept="image/*">
+                                <a>Change</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix">
+                        <ul class="clearfix list-inline social-icons mt10 mbn">
+                            <li><a href=""><img src="assets/img/facebook-256.png" /></a></li>
+                            <li><a href=""><img src="assets/img/twitter.png" /></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-sm-9">
+                        <form class="form-horizontal user-basic-profile-form">
+                            <div class="form-group">
+                                <span class="form-control-static" ng-if="($root.isPublicView || $root.isPrivateView)" uib-tooltip="First Name" tooltip-append-to-body="true">{{user.first_name}}</span>
+                                <span class="form-control-static" ng-if="!editMode.first_name && !($root.isPublicView || $root.isPrivateView)"
+                                      uib-tooltip="First Name" tooltip-append-to-body="true" ng-click="enableEdit('first_name', user.first_name)">
+                                    {{user.first_name}} <i class="fa fa-pencil" ng-if="!($root.isPublicView || $root.isPrivateView)"></i></span>
+                                <input type="text" name="first_name" ng-if="editMode.first_name && !($root.isPublicView || $root.isPrivateView)" ng-model="editData.first_name" ng-keyup="checkInputAction($event, 'first_name')" />
+                            </div>
+                            <div class="form-group">
+                                <span class="form-control-static" ng-if="!editMode.last_name" uib-tooltip="Last Name" tooltip-append-to-body="true"
+                                      ng-click="enableEdit('last_name', user.last_name)">{{user.last_name}} <i class="fa fa-pencil" ng-if="!($root.isPublicView || $root.isPrivateView)"></i></span>
+                                <input type="text" name="last_name" ng-if="editMode.last_name" ng-model="editData.last_name" ng-keyup="checkInputAction($event, 'last_name')" />
+                            </div>
+                            <div class="form-group">
+                                <!--<label class="control-label text-left">Email</label>-->
+                                <!--<span>: </span>-->
+                                <span class="form-control-static" ng-if="!editMode.email" ng-click="enableEdit('email', user.email)"
+                                      uib-tooltip="Email" tooltip-append-to-body="true">{{user.email}} <i class="fa fa-pencil" ng-if="!($root.isPublicView || $root.isPrivateView)"></i></span>
+                                <input type="email" name="email" ng-if="editMode.email" ng-model="editData.email" ng-keyup="checkInputAction($event, 'email')" />
+                            </div>
+                            <div class="form-group">
+                                <!--<label class="control-label text-left">University</label>-->
+                                <!--<span>: </span>-->
+                                <span class="form-control-static" ng-if="!editMode.university_id" ng-click="enableEdit('university_id', user.university_id)"
+                                      uib-tooltip="University" tooltip-append-to-body="true">{{user.university_name}} <i class="fa fa-pencil" ng-if="!($root.isPublicView || $root.isPrivateView)"></i></span>
+                                <div class="clearfix university-select-wrapper" ng-if="editMode.university_id">
+                                    <select class="form-control" id='university' name="university" required="required"
+                                            ng-model="editData.university_id"
+                                            ng-change="onSelectChange('university')"
+                                            ng-options="u.id as u.name for u in metaData.universities">
+                                        <option value="">Select University</option>
+                                    </select>
+                                    <i class="fa fa-times" ng-click="closeEdit('university_id')"></i>
+                                </div>
+                            </div>
+                        </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <form class="form-horizontal user-status-form">
+                <div class="form-group">
+                    <label class="control-label text-left">Rank</label>
+                    <!--<div class="col-sm-6">-->
+                        <sapn class="form-control-static">: 231</sapn>
+                    <!--</div>-->
+                </div>
+                <div class="form-group">
+                    <label class="control-label text-left">Verification Status</label>
+                    <!--<div class="col-sm-6">-->
+                        <span class="form-control-static">: {{user.approved}}</span>
+                    <!--</div>-->
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <div class="clearfix user-profile-tabs-wrapper mt20 mb30">
+            <div class="col-sm-3 prn">
+                <ul class="nav nav-tabs nav-stacked mt20" role="tablist">
+                    <li ng-class="{'active': profileTabRoute.profile}">
+                        <a class="btn-lg" ui-sref="{{tabRoutes.profile}}">Profile</a>
+                    </li>
+                    <li ng-class="{'active': profileTabRoute.idea}" ng-if="!$root.isPublicView">
+                        <a class="btn-lg" ui-sref="{{tabRoutes.idea}}">Idea</a>
+                    </li>
+                    <li ng-class="{'active': profileTabRoute.verifications}" ng-if="!$root.isPublicView">
+                        <a class="btn-lg" ui-sref="{{tabRoutes.verification}}">Verification</a>
+                    </li>
+                    <li ng-class="{'active': profileTabRoute.connections}">
+                        <a class="btn-lg" ui-sref="{{tabRoutes.connection}}">Connections</a>
+                    </li>
+                    <li ng-class="{'active': profileTabRoute.password}" ng-if="!($root.isPublicView || $root.isPrivateView)">
+                        <a class="btn-lg" ui-sref="{{tabRoutes.password}}">Change Password</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-sm-9 pln">
+                <div class="tab-content">
+                    <div class="tab-pane" ng-class="{'active': profileTabRoute.profile}">
+                        <div class="clearfix user-profile-wrapper">
+                            <div class="col-sm-12">
+                                <form class="clearfix form-horizontal" role="form" novalidate="novalidate" name="contactForm">
+                                    <fieldset class="fsStyle">
+                                        <legend class="legendStyle">Additional Info</legend>
+
+
+                                    <!-- Major -->
+                                    <div class="form-group mb-15">
+                                        <label for="major" class="col-sm-3 control-label">Major :</label>
+                                        <div class="col-sm-8">
+                                            <label class="form-control-static fw200" ng-if="!editMode.stream_id" ng-click="enableEdit('stream_id', user.stream_id)">{{user.stream_name}} <i class="fa fa-pencil" ng-if="!($root.isPublicView || $root.isPrivateView)"></i></label>
+                                            <div class="clearfix university-select-wrapper" ng-if="editMode.stream_id">
+                                                <select class="form-control" id='major' name="major" required="required"
+                                                        ng-if="editMode.stream_id"
+                                                        ng-model="editData.stream_id"
+                                                        ng-change="onSelectChange('stream')"
+                                                        ng-options="m.id as m.name for m in metaData.streams">
+                                                    <option value="">Select Major</option>
+                                                </select>
+                                                <i class="fa fa-times" ng-click="closeEdit('stream_id')"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Year of graduation -->
+                                    <div class="form-group mb-15">
+                                        <label for="year_of_graduation" class="col-sm-3 control-label">Graduation Year : </label>
+                                        <div class="col-sm-8">
+                                            <label class="form-control-static fw200" ng-if="!editMode.year_of_graduation" ng-click="enableEdit('year_of_graduation', user.year_of_graduation)">{{user.year_of_graduation}} <i class="fa fa-pencil" ng-if="!($root.isPublicView || $root.isPrivateView)"></i></label>
+                                            <div class="clearfix university-select-wrapper" ng-if="editMode.year_of_graduation">
+                                                <select class="form-control" id='year_of_graduation' name="year_of_graduation" required="required"
+                                                        ng-if="editMode.year_of_graduation"
+                                                        ng-model="editData.year_of_graduation"
+                                                        ng-change="onSelectChange('year_of_graduation', true)"
+                                                        ng-options="y as y for y in metaData.year_of_graduation">
+                                                    <option value="">Select Year Of Graduation</option>
+                                                </select>
+                                                <i class="fa fa-times" ng-click="closeEdit('year_of_graduation')"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Passion -->
+                                    <div class="form-group mb-15"
+                                         ng-class='{"has-error": loginForm.passion.$invalid && (loginForm.passion.$touched || loginForm.$submitted),"has-success": loginForm.passion.$valid && loginForm.$submitted}'>
+                                        <label for="passion" class="col-sm-3 control-label">Passion :</label>
+                                        <div class="col-sm-8">
+                                            <div class="form-control-static fw200" ng-if="!editMode.passion" ng-click="enableEdit('passion', user.passion)">{{user.passion}} <i class="fa fa-pencil" ng-if="!($root.isPublicView || $root.isPrivateView)"></i></div>
+                                            <textarea name="passion" id="passion" class="form-control"
+                                                      ng-if="editMode.passion" ng-model="editData.passion" ng-keyup="checkInputAction($event, 'passion')"
+                                                      placeholder="What is your passion?" required="required" ng-minlength="3" ng-maxlength="300"></textarea>
+                                        </div>
+                                    </div>
+                                    </fieldset>
+
+
+                                    <fieldset class="fsStyle">
+                                        <legend class="legendStyle">Contact Info</legend>
+                                        <!-- Phone -->
+                                        <div class="form-group mb-15">
+                                            <label for="phone" class="col-sm-3 control-label">Phone :</label>
+                                            <div class="col-sm-9">
+                                                <label class="form-control-static fw200" ng-if="!editMode.phone" ng-click="enableEdit('phone', user.phone)">{{user.phone ? user.phone : 'Not Provided'}} <i class="fa fa-pencil" ng-if="!($root.isPublicView || $root.isPrivateView)"></i></label>
+                                                <input type="text" name="phone" id="phone"  class="form-control" placeholder="What is your phone?" r
+                                                       ng-if="editMode.phone" ng-model="editData.phone" ng-keyup="checkInputAction($event, 'phone')"
+                                                       equired="required" ng-minlength="3" />
+                                            </div>
+                                        </div>
+                                    </fieldset>
+
+                                    <fieldset class="fsStyle" ng-if="!$root.isPublicView">
+                                        <legend class="legendStyle">Urls</legend>
+
+                                        <div class="form-group mb-15 ml10">
+                                            <span uib-tooltip="Public Url" tooltip-append-to-body="true"><i class="fa fa-globe"></i></span>
+                                            <label class="form-control-static fw200" ng-if="!editMode.public_url"> <a ng-href="{{user.public_url + '/'+ user.handler}}" target="_blank">{{user.public_url + '/'+ user.handler}}</a> <i class="fa fa-pencil" ng-if="!($root.isPublicView || $root.isPrivateView)" ng-click="editPublicUrl()"></i></label>
+                                            <div class="inline-block" ng-if="editMode.public_url">
+                                                <span>{{user.public_url + '/'}}</span>
+                                                <input type="text" name="username" ng-model="editData.handler" ng-keyup="checkUnameAvailability($event)" />
+                                                <span ng-if="uNameAvailability.notAvailable" class="text-danger"> Not Available</span>
+                                                <span ng-if="uNameAvailability.available" class="text-success"> Available</span>
+                                                <span ng-if="uNameAvailability.searching"><i class="fa fa-spinner fa-spin"></i> Checking</span>
+                                                <span ng-if="uNameAvailability.available" uib-tooltip="Save" tooltip-append-to-body="true" ng-click="savePublicUrl()"><i class="fa fa-check-circle"></i> </span>
+                                                <span uib-tooltip="Cancel" tooltip-append-to-body="true" ng-click="cancelEditPublicUrl()"><i class="fa fa-times"></i> </span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group mb-15 ml10">
+                                            <span uib-tooltip="Private Url" tooltip-append-to-body="true"><i class="fa fa-lock"></i></span>
+                                            <label class="form-control-static fw200"> <a ng-href="{{user.private_url + '/' + user.privateHash}}" target="_blank">{{user.private_url + '/' + user.privateHash}}</a></label>
+                                            <span class="btn btn-xs btn-success pl10 pr10" uib-tooltip="Regenerate the private url" tooltip-append-to-body="true" ng-click="getPrivateUrl()" ng-if="!($root.isPublicView || $root.isPrivateView)">Regenerate</span>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" ng-class="{'active': profileTabRoute.idea}" ng-if="!$root.isPublicView">
+                        <div class="clearfix">
+                            <div class="col-sm-12" ng-repeat="row in ideaFields">
+                                <form class="clearfix form-horizontal" role="form" novalidate="novalidate">
+                                    <fieldset class="fsStyle">
+                                        <legend class="legendStyle">{{row.display_name}}</legend>
+                                        <div class="clearfix" ng-if="!(userIdea[row.id] && userIdea[row.id].content)">
+                                            <div class="clearfix p15">{{row.description}}</div>
+                                        </div>
+
+                                        <div class="clearfix" ng-if="!row.editMode && (userIdea[row.id] && userIdea[row.id].content)">
+                                            <div class="clearfix p15" ng-click="editIdea(row)">{{userIdea[row.id].content}}</div>
+                                        </div>
+
+                                        <div class="clearfix mt10 mb10" ng-if="!(userIdea[row.id] && userIdea[row.id].content) && !($root.isPublicView || $root.isPrivateView)">
+                                            <div class="pl15"><a class="btn btn-primary btn-sm" ng-click="editIdea(row)" uib-tooltip="Add Now" tooltip-append-to-body="true">Add</a></div>
+                                        </div>
+                                        <div class="clearfix" ng-if="row.editMode">
+                                            <div class="form-group mb-15 ml10 mr10">
+                                                <textarea class="form-control" rows="6" ng-model="userIdea[row.id].content"></textarea>
+                                            </div>
+                                            <div class="form-group mb5 ml10 mr10 text-right">
+                                                <span class="btn btn-success btn-xs" ng-click="saveIdea(row)" >Save</span>
+                                                <span class="btn btn-danger btn-xs" ng-click="cancelEditIdea(row)">Cancel</span>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" ng-class="{'active': profileTabRoute.verifications}" ng-if="!$root.isPublicView">
+                        <div class="clearfix" ng-if="!($root.isPublicView || $root.isPrivateView)">
+                            <p class="mb5 p5">You should be verified by atleast 5 classmates or 1 professor or dean.</p>
+                        </div>
+                        <div class="clearfix">
+                            <form class="clearfix form-horizontal" role="form" novalidate="novalidate" name="verificationForm" ng-submit="addVerifiers(verificationForm)">
+                            <div class="col-sm-6">
+
+                                    <fieldset class="fsStyle">
+                                        <legend class="legendStyle">Students (5 Min)</legend>
+
+                                        <div class="clearfix">
+                                            <div class="" ng-repeat="row in verifiers.classmate track by $index" style="padding: 0;" ng-if="!!row.id">
+                                                <div class="clearfix verifier-wrapper">
+                                                    <div class="pull-right verification-status-wrapper">
+                                                        <i class="fa fa-check-circle text-success" ng-if="row.approved == 'approved'" uib-tooltip="{{row.approved}}" tooltip-append-to-body="true"></i>
+                                                        <i class="fa fa-info-circle text-info" ng-if="row.approved == 'in progress'" uib-tooltip="{{row.approved}}" tooltip-append-to-body="true"></i>
+                                                        <i class="fa fa-exclamation-triangle text-danger" ng-if="row.approved == 'rejected'" uib-tooltip="{{row.approved}}" tooltip-append-to-body="true"></i>
+                                                    </div>
+                                                    <div class="pull-left verifier-name-wrapper">
+                                                        <div>{{row.email}}
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="clearfix row form-group" ng-if="!row.id" ng-repeat="row in verifiers.classmate track by $index" style="padding: 5px; margin: 0 0 10px 0;">
+                                            <ng-form name="verifierForm">
+                                                <div class="col-md-9 pln" ng-class='{"has-error": verifierForm["verifier_email{{$index}}"].$invalid && (verifierForm["verifier_email{{$index}}"].$touched || loginForm.$submitted),"has-success": verifierForm["verifier_email{{$index}}"].$valid}'>
+                                                    <div class="clearfix">
+                                                        <input class="form-control input-sm" type="email" name="verifier_email{{$index}}" ng-model="row.email"
+                                                               placeholder="Email" required="required"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <button class="btn btn-primary btn-sm btn-round" uib-tooltip="Remove" tooltip-append-to-body="true" type="button" ng-if="!row.id" ng-click="removeVerifierRow('classmate',$index)"><i class="fa fa-trash-o"/></button>
+                                                </div>
+                                            </ng-form>
+                                        </div>
+                                        <div class="col-md-3 pln" ng-if="!($root.isPublicView || $root.isPrivateView)">
+                                            <button type="button" class="btn btn-primary btn-sm" ng-click="addVerifierRow('classmate')"
+                                                    uib-tooltip="Add new student row" tooltip-append-to-body="true"
+                                                    style="margin-right: 15px;"><i class="fa fa-plus-circle"/>&nbsp;Add</button>
+                                        </div>
+
+
+                                    </fieldset>
+
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="col-sm-12 pn">
+
+                                        <fieldset class="fsStyle">
+                                            <legend class="legendStyle">Professor</legend>
+
+                                            <div class="clearfix">
+                                                <div class="" ng-repeat="row in verifiers.professor track by $index" style="padding: 0;" ng-if="!!row.id">
+                                                    <div class="clearfix verifier-wrapper">
+                                                        <div class="pull-right verification-status-wrapper">
+                                                            <i class="fa fa-check-circle text-success" ng-if="row.approved == 'approved'" uib-tooltip="{{row.approved}}" tooltip-append-to-body="true"></i>
+                                                            <i class="fa fa-info-circle text-info" ng-if="row.approved == 'in progress'" uib-tooltip="{{row.approved}}" tooltip-append-to-body="true"></i>
+                                                            <i class="fa fa-exclamation-triangle text-danger" ng-if="row.approved == 'rejected'" uib-tooltip="{{row.approved}}" tooltip-append-to-body="true"></i>
+                                                        </div>
+                                                        <div class="pull-left verifier-name-wrapper">
+                                                            <div>{{row.email}}
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="clearfix row form-group" ng-if="!row.id" ng-repeat="row in verifiers.professor track by $index" style="padding: 5px; margin: 0 0 10px 0;">
+                                                <ng-form name="verifierForm">
+                                                    <div class="col-md-9 pln" ng-class='{"has-error": verifierForm["verifier_email{{$index}}"].$invalid && (verifierForm["verifier_email{{$index}}"].$touched || loginForm.$submitted),"has-success": verifierForm["verifier_email{{$index}}"].$valid}'>
+                                                        <div class="clearfix">
+                                                            <input class="form-control input-sm" type="email" name="verifier_email{{$index}}" ng-model="row.email"
+                                                                   placeholder="Email" required="required"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-1">
+                                                        <button class="btn btn-primary btn-sm btn-round" uib-tooltip="Remove" tooltip-append-to-body="true" type="button" ng-if="!row.id" ng-click="removeVerifierRow('professor',$index)"><i class="fa fa-trash-o"/></button>
+                                                    </div>
+                                                </ng-form>
+                                            </div>
+                                            <div class="col-md-3  pln" ng-if="!($root.isPublicView || $root.isPrivateView)">
+                                                <button type="button" class="btn btn-primary btn-sm" ng-click="addVerifierRow('professor')"
+                                                        uib-tooltip="Add new professor row" tooltip-append-to-body="true"
+                                                        style="margin-right: 15px;"><i class="fa fa-plus-circle"/>&nbsp;Add</button>
+                                            </div>
+                                        </fieldset>
+
+                                </div>
+
+                                <div class="col-sm-12 pn">
+
+                                        <fieldset class="fsStyle">
+                                            <legend class="legendStyle">Dean, Official etc</legend>
+
+                                        </fieldset>
+                                </div>
+
+                            </div>
+                                <div class="col-sm-12 text-right mt20" ng-if="!($root.isPublicView || $root.isPrivateView)">
+                                    Please click save button once you added the classmate or professor emails.
+                                    <button type="submit" class="btn btn-primary" ng-disabled="verificationForm.$invalid">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="tab-pane" ng-class="{'active': profileTabRoute.connections}">
+
+                        <div class="clearfix">
+                            <div class="col-sm-12 col-xs-12 connections-wrapper">
+                                <div class="col-sm-4 col-xs-6" ng-repeat="row in [0,1,2,3,4,5,6,7,8,9]">
+                                    <div class="connection-row">
+                                        <div class="clearfix connection-image-wrapper">
+                                            <img src="assets/img/avatar.jpeg" class="img-responsive" alt="" />
+                                        </div>
+                                        <p class="mbn text-center">Student {{row+1}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" ng-class="{'active': profileTabRoute.password}" ng-if="!($root.isPublicView || $root.isPrivateView)">
+
+                        <div class="clearfix">
+                            <div class="col-md-12">
+                                <form class="clearfix form-horizontal" role="form" novalidate="novalidate" name="passwordForm" ng-submit="changePassword(passwordForm)">
+                                    <fieldset class="fsStyle">
+                                        <legend class="legendStyle">Change Password</legend>
+
+                                        <!-- Password -->
+                                        <div class="form-group mb-15"
+                                             ng-class='{"has-error": passwordForm.current_password.$invalid && (passwordForm.current_password.$touched || passwordForm.$submitted),"has-success": passwordForm.current_password.$valid && passwordForm.$submitted}'>
+                                            <label for="old_password" class="col-sm-3 control-label">Current Password</label>
+                                            <div class="col-sm-8">
+                                                <input type="password" class="form-control input-lg" id="old_password" name="current_password"
+                                                       placeholder="Password" ng-model="passwordFormData.old_password" required ng-minlength="6" ng-maxlength="30">
+                                                <span class="help-block" ng-messages="passwordForm.current_password.$error"
+                                                      ng-if="(passwordForm.current_password.$touched || passwordForm.$submitted) && passwordForm.current_password.$invalid">
+                                                        <span class="text-danger" ng-message="required">Password is required</span>
+                                                        <span class="text-danger" ng-message="minlength">Min 6 chars is required</span>
+                                                        <span class="text-danger" ng-message="maxlength">Max 30 chars</span>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Password -->
+                                        <div class="form-group mb-15"
+                                             ng-class='{"has-error": passwordForm.new_password.$invalid && (passwordForm.new_password.$touched || passwordForm.$submitted),"has-success": passwordForm.new_password.$valid && passwordForm.$submitted}'>
+                                            <label for="password" class="col-sm-3 control-label">New Password</label>
+                                            <div class="col-sm-8">
+                                                <input type="password" class="form-control input-lg" id="password" name="new_password"
+                                                       placeholder="Password" ng-model="passwordFormData.new_password" required ng-minlength="6" ng-maxlength="30">
+                                                <span class="help-block" ng-messages="passwordForm.new_password.$error"
+                                                      ng-if="(passwordForm.new_password.$touched || passwordForm.$submitted) && passwordForm.new_password.$invalid">
+                                                        <span class="text-danger" ng-message="required">Password is required</span>
+                                                        <span class="text-danger" ng-message="minlength">Min 6 chars is required</span>
+                                                        <span class="text-danger" ng-message="maxlength">Max 30 chars</span>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Confirm password -->
+                                        <div class="form-group mb-15"
+                                             ng-class='{"has-error": passwordForm.new_password.$invalid && (passwordForm.confirm_password.$touched || passwordForm.$submitted),"has-success": passwordForm.confirm_password.$valid && passwordForm.$submitted}'>
+                                            <label for="confirm_password" class="col-sm-3 control-label">Confirm Password</label>
+                                            <div class="col-sm-8">
+                                                <input type="password" class="form-control input-lg" id="confirm_password" name="confirm_password" match="passwordForm.new_password"
+                                                       placeholder="Confirm Password" ng-model="passwordFormData.confirm_password" required ng-minlength="6" ng-maxlength="30">
+                                <span class="help-block" ng-messages="passwordForm.confirm_password.$error"
+                                      ng-if="(passwordForm.confirm_password.$touched || passwordForm.$submitted) && passwordForm.confirm_password.$invalid">
+                                        <span class="text-danger" ng-message="required">Confirm Password is required</span>
+                                    <span class="text-danger" ng-message="minlength">Min 6 chars is required</span>
+                                        <span class="text-danger" ng-message="maxlength">Max 30 chars</span>
+                                        <span class="text-danger" ng-message="match">Passwords not matching</span>
+                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-center">
+                                            <button type="submit" class="btn btn-primary col-md-3 btn-lg mt20 mb20" style="float: none;" ng-disabled="passwordForm.$invalid">Submit</button>
+                                        </div>
+
+                                        </fieldset>
+                                    </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

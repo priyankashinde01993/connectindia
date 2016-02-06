@@ -1,0 +1,184 @@
+<div class="container register-container" ng-init="init();getRegisterMetaData();">
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1 col-sm-offset-0">
+            <div class="form-wrapper" cg-busy="{promise: signUpBusy}">
+                <h3 class="text-center mb-20">Register</h3>
+
+                <form class="clearfix form-horizontal" role="form" novalidate="novalidate" name="loginForm" ng-submit="register(loginForm)">
+                    <!-- First name -->
+                    <div class="form-group mb-15"
+                         ng-class='{"has-error": loginForm.first_name.$invalid && (loginForm.first_name.$touched || loginForm.$submitted),"has-success": loginForm.first_name.$valid && loginForm.$submitted}'>
+                        <label for="first_name" class="col-sm-3 control-label">First Name</label>
+                        <div class="col-sm-8">
+                            <input autocomplete="off" type="text" class="form-control input-lg" name="first_name" id="first_name"
+                                   placeholder="First Name" ng-model="user.first_name" required ng-minlength="3" ng-maxlength="30">
+                                <span class="help-block" ng-messages="loginForm.email.$error"
+                                      ng-if="(loginForm.first_name.$touched || loginForm.$submitted) && loginForm.first_name.$invalid">
+                                        <span class="text-danger" ng-message="required">First name is required</span>
+                                        <span class="text-danger" ng-message="minlength">Min 3 chars is required</span>
+                                        <span class="text-danger" ng-message="maxlength">Max 30 chars</span>
+                                </span>
+                        </div>
+                    </div>
+                    <!-- Last name -->
+                    <div class="form-group mb-15"
+                         ng-class='{"has-error": loginForm.last_name.$invalid && (loginForm.last_name.$touched || loginForm.$submitted),"has-success": loginForm.last_name.$valid && loginForm.$submitted}'>
+                        <label for="last_name" class="col-sm-3 control-label">Last Name</label>
+                        <div class="col-sm-8">
+                            <input autocomplete="off" type="text" class="form-control input-lg" name="last_name" id="last_name"
+                                   placeholder="Lasr Name" ng-model="user.last_name" required ng-minlength="3" ng-maxlength="30">
+                                <span class="help-block" ng-messages="loginForm.email.$error"
+                                      ng-if="(loginForm.last_name.$touched || loginForm.$submitted) && loginForm.last_name.$invalid">
+                                        <span class="text-danger" ng-message="required">Last name is required</span>
+                                        <span class="text-danger" ng-message="minlength">Min 3 chars is required</span>
+                                        <span class="text-danger" ng-message="maxlength">Max 30 chars</span>
+                                </span>
+                        </div>
+                    </div>
+                    <!-- Email -->
+                    <div class="form-group mb-15"
+                         ng-class='{"has-error": loginForm.email.$invalid && (loginForm.email.$touched || loginForm.$submitted),"has-success": loginForm.email.$valid && loginForm.$submitted}'>
+                        <label for="email" class="col-sm-3 control-label">Email address</label>
+                        <div class="col-sm-8">
+                            <input autocomplete="off" type="email" class="form-control input-lg" name="email" id="email"
+                                   placeholder="Email" ng-model="user.email" required>
+                                <span class="help-block" ng-messages="loginForm.email.$error"
+                                      ng-if="(loginForm.email.$touched || loginForm.$submitted) && loginForm.email.$invalid">
+                                        <span class="text-danger" ng-message="email">Please enter valid email address</span>
+                                        <span class="text-danger" ng-message="required">Email is required</span>
+                                </span>
+                        </div>
+                    </div>
+
+                    <!-- Profile pic -->
+                    <div class="form-group mb-15"
+                         ng-class='{"has-error": loginForm.profile_pic.$invalid && (loginForm.profile_pic.$touched || loginForm.$submitted),"has-success": loginForm.profile_pic.$valid && loginForm.$submitted}'>
+                        <label class="col-sm-3 control-label">Profile Pic</label>
+                        <div class="col-sm-3">
+                            <div class="thumbnail">
+                                <div class="clearfix signup-profile-pic-container">
+                                    <img ng-src="{{user.profile_pic_url ? user.profile_pic_url : 'assets/img/avatar.jpeg'}}" class="img-responsive" alt="user image" align="middle">
+                                </div>
+                                <div class="caption text-center">
+
+                                    <div ngf-select
+                                         ng-model="files"
+                                         ngf-change="uploadFile($files)"
+                                         class="drop-box drag-drop-container cursor-hover text-center border border-lg border-dashed p-20 cursor-pointer"
+                                         ngf-drag-over-class="dragover" ngf-multiple="false" ngf-allow-dir="false"
+                                         accept="image/*">
+                                        <button class="btn btn-primary btn-sm btn-block" type="button">Upload</button>
+                                        <!--<span class="clearfix small help-block">*Only image files are allowed</span>-->
+                                        <!--<span class="help-block text-center pt-10">Accepted formats: gif, png, jpg. Max file size 2Mb</span>-->
+                                    </div>
+                                    <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group mb-15"
+                         ng-class='{"has-error": loginForm.password.$invalid && (loginForm.password.$touched || loginForm.$submitted),"has-success": loginForm.password.$valid && loginForm.$submitted}'>
+                        <label for="password" class="col-sm-3 control-label">Password</label>
+                        <div class="col-sm-8">
+                            <input type="password" class="form-control input-lg" id="password" name="password"
+                                   placeholder="Password" ng-model="user.password" required ng-minlength="6" ng-maxlength="30">
+                                <span class="help-block" ng-messages="loginForm.password.$error"
+                                      ng-if="(loginForm.password.$touched || loginForm.$submitted) && loginForm.password.$invalid">
+                                        <span class="text-danger" ng-message="required">Password is required</span>
+                                        <span class="text-danger" ng-message="minlength">Min 6 chars is required</span>
+                                        <span class="text-danger" ng-message="maxlength">Max 30 chars</span>
+                                </span>
+                        </div>
+                    </div>
+
+                    <!-- Confirm password -->
+                    <div class="form-group mb-15"
+                         ng-class='{"has-error": loginForm.password.$invalid && (loginForm.confirm_password.$touched || loginForm.$submitted),"has-success": loginForm.confirm_password.$valid && loginForm.$submitted}'>
+                        <label for="confirm_password" class="col-sm-3 control-label">Confirm Password</label>
+                        <div class="col-sm-8">
+                            <input type="password" class="form-control input-lg" id="confirm_password" name="confirm_password" match="user.password"
+                                   placeholder="Confirm Password" ng-model="user.confirm_password" required ng-minlength="6" ng-maxlength="30">
+                                <span class="help-block" ng-messages="loginForm.confirm_password.$error"
+                                      ng-if="(loginForm.confirm_password.$touched || loginForm.$submitted) && loginForm.confirm_password.$invalid">
+                                        <span class="text-danger" ng-message="required">Confirm Password is required</span>
+                                    <span class="text-danger" ng-message="minlength">Min 6 chars is required</span>
+                                        <span class="text-danger" ng-message="maxlength">Max 30 chars</span>
+                                        <span class="text-danger" ng-message="match">Passwords not matching</span>
+                                </span>
+                        </div>
+                    </div>
+
+                    <!-- University -->
+                    <div class="form-group mb-15"
+                         ng-class='{"has-error": loginForm.university.$invalid && (loginForm.university.$touched || loginForm.$submitted),"has-success": loginForm.university.$valid && loginForm.$submitted}'>
+                        <label for="university" class="col-sm-3 control-label">University</label>
+                        <div class="col-sm-8">
+                            <select class="form-control" id='university' name="university" required="required" ng-model="user.university_id"
+                                    ng-options="u.id as u.name for u in metaData.universities">
+                                <option value="">Select University</option>
+                            </select>
+                            <span class="help-block" ng-messages="loginForm.university.$error"
+                                  ng-if="(loginForm.university.$touched || loginForm.$submitted) && loginForm.university.$invalid">
+                                    <span class="text-danger" ng-message="required">Please select</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Major -->
+                    <div class="form-group mb-15"
+                         ng-class='{"has-error": loginForm.major.$invalid && (loginForm.major.$touched || loginForm.$submitted),"has-success": loginForm.major.$valid && loginForm.$submitted}'>
+                        <label for="major" class="col-sm-3 control-label">Major</label>
+                        <div class="col-sm-8">
+                            <select class="form-control" id='major' name="major" required="required" ng-model="user.stream_id"
+                                    ng-options="m.id as m.name for m in metaData.streams">
+                                <option value="">Select Major</option>
+                            </select>
+                            <span class="help-block" ng-messages="loginForm.major.$error"
+                                  ng-if="(loginForm.major.$touched || loginForm.$submitted) && loginForm.major.$invalid">
+                                    <span class="text-danger" ng-message="required">Please select</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Year of graduation -->
+                    <div class="form-group mb-15"
+                         ng-class='{"has-error": loginForm.year_of_graduation.$invalid && (loginForm.year_of_graduation.$touched || loginForm.$submitted),"has-success": loginForm.year_of_graduation.$valid && loginForm.$submitted}'>
+                        <label for="year_of_graduation" class="col-sm-3 control-label">Select Year Of Graduation</label>
+                        <div class="col-sm-8">
+                            <select class="form-control" id='year_of_graduation' name="year_of_graduation" required="required" ng-model="user.year_of_graduation"
+                                    ng-options="y as y for y in metaData.year_of_graduation">
+                                <option value="">Select Year Of Graduation</option>
+                            </select>
+                            <span class="help-block" ng-messages="loginForm.year_of_graduation.$error"
+                                  ng-if="(loginForm.year_of_graduation.$touched || loginForm.$submitted) && loginForm.year_of_graduation.$invalid">
+                                    <span class="text-danger" ng-message="required">Please select</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Passion -->
+                    <div class="form-group mb-15"
+                         ng-class='{"has-error": loginForm.passion.$invalid && (loginForm.passion.$touched || loginForm.$submitted),"has-success": loginForm.passion.$valid && loginForm.$submitted}'>
+                        <label for="passion" class="col-sm-3 control-label">Passion</label>
+                        <div class="col-sm-8">
+                            <textarea name="passion" id="passion" cols="30" rows="2" class="form-control" ng-model="user.passion" placeholder="What is your passion?" required="required" ng-minlength="3" ng-maxlength="100"></textarea>
+                            <span class="help-block" ng-messages="loginForm.passion.$error"
+                                  ng-if="(loginForm.passion.$touched || loginForm.$submitted) && loginForm.passion.$invalid">
+                                        <span class="text-danger" ng-message="required">Passion is required</span>
+                                    <span class="text-danger" ng-message="minlength">Min 3 chars is required</span>
+                                        <span class="text-danger" ng-message="maxlength">Max 100 chars</span>
+                                </span>
+                        </div>
+                    </div>
+
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary col-md-3 btn-lg mt-20" style="float: none;" ng-disabled="loginForm.$invalid">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

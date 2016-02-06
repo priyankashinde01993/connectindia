@@ -1,0 +1,254 @@
+<div class="container register-container" ng-init="init();getRegisterMetaData();getUser();">
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1 col-sm-offset-0">
+
+            <div class="alert alert-success">
+                <strong>Hi {{user.first_name ? user.first_name : 'Student'}},</strong> You have logged in successfully and  been verified by all your colleagues. We will let you know more about the event in future.
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>Hi {{user.first_name ? user.first_name : 'Student'}},</strong> You have logged in successfully but some of your colleagues have not verified you yet. Send them a gentle reminder to do
+                so by clicking <a href="">here</a>
+            </div>
+            <div class="alert alert-danger">
+                <strong>Sorry {{user.first_name ? user.first_name : 'Student'}}, your colleagues did not verify you.</strong> Please add more verifiers to verify you.
+            </div>
+
+            <div class="clearfix">
+                <h4>List of verifiers who have approved</h4>
+
+                <div class="clearfix form-wrapper mb20">
+                    <div class="col-md-6 col-sm-6" ng-repeat="row in user.verifiers track by $index" style="padding: 0;" ng-if="!!row.id">
+                        <div class="clearfix verifier-wrapper">
+                            <div class="pull-left designation-icon-wrapper">
+                                <span class="btn btn-primary pull-left" uib-tooltip="{{row.designation}}" title="{{row.designation}}">{{row.designation.substring(0, 1)}}</span>
+                            </div>
+                            <div class="pull-left verifier-name-wrapper">
+                                <div>{{row.email}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <h4>List of suggestions by verifier</h4>
+
+                <h4>List of verifier who rejected</h4>
+
+                <div class="clearfix form-wrapper mb20">
+                    <div class="col-md-6 col-sm-6" ng-repeat="row in user.verifiers track by $index" style="padding: 0;" ng-if="!!row.id">
+                        <div class="clearfix verifier-wrapper">
+                            <div class="pull-left designation-icon-wrapper">
+                                <span class="btn btn-primary pull-left" uib-tooltip="{{row.designation}}" title="{{row.designation}}">{{row.designation.substring(0, 1)}}</span>
+                            </div>
+                            <div class="pull-left verifier-name-wrapper">
+                                <div>{{row.email}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-10 col-md-offset-1 col-sm-offset-0">
+            <h4>Edit Profile</h4>
+            <div class="form-wrapper" cg-busy="{promise: signUpBusy}">
+                <form class="clearfix form-horizontal" role="form" novalidate="novalidate" name="loginForm" ng-submit="editProfile(loginForm)">
+                    <!-- First name -->
+                    <div class="form-group mb-15"
+                         ng-class='{"has-error": loginForm.first_name.$invalid && (loginForm.first_name.$touched || loginForm.$submitted),"has-success": loginForm.first_name.$valid && loginForm.$submitted}'>
+                        <label for="first_name" class="col-sm-3 control-label">First Name</label>
+                        <div class="col-sm-8">
+                            <input autocomplete="off" type="text" class="form-control input-lg" name="first_name" id="first_name"
+                                   placeholder="First Name" ng-model="user.first_name" required ng-minlength="3" ng-maxlength="30">
+                                <span class="help-block" ng-messages="loginForm.email.$error"
+                                      ng-if="(loginForm.first_name.$touched || loginForm.$submitted) && loginForm.first_name.$invalid">
+                                        <span class="text-danger" ng-message="required">First name is required</span>
+                                        <span class="text-danger" ng-message="minlength">Min 3 chars is required</span>
+                                        <span class="text-danger" ng-message="maxlength">Max 30 chars</span>
+                                </span>
+                        </div>
+                    </div>
+                    <!-- Last name -->
+                    <div class="form-group mb-15"
+                         ng-class='{"has-error": loginForm.last_name.$invalid && (loginForm.last_name.$touched || loginForm.$submitted),"has-success": loginForm.last_name.$valid && loginForm.$submitted}'>
+                        <label for="last_name" class="col-sm-3 control-label">Last Name</label>
+                        <div class="col-sm-8">
+                            <input autocomplete="off" type="text" class="form-control input-lg" name="last_name" id="last_name"
+                                   placeholder="Lasr Name" ng-model="user.last_name" required ng-minlength="3" ng-maxlength="30">
+                                <span class="help-block" ng-messages="loginForm.email.$error"
+                                      ng-if="(loginForm.last_name.$touched || loginForm.$submitted) && loginForm.last_name.$invalid">
+                                        <span class="text-danger" ng-message="required">Last name is required</span>
+                                        <span class="text-danger" ng-message="minlength">Min 3 chars is required</span>
+                                        <span class="text-danger" ng-message="maxlength">Max 30 chars</span>
+                                </span>
+                        </div>
+                    </div>
+                    <!-- Email -->
+                    <div class="form-group mb-15"
+                         ng-class='{"has-error": loginForm.email.$invalid && (loginForm.email.$touched || loginForm.$submitted),"has-success": loginForm.email.$valid && loginForm.$submitted}'>
+                        <label for="email" class="col-sm-3 control-label">Email address</label>
+                        <div class="col-sm-8">
+                            <input autocomplete="off" type="email" class="form-control input-lg" name="email" id="email"
+                                   placeholder="Email" ng-model="user.email" required>
+                                <span class="help-block" ng-messages="loginForm.email.$error"
+                                      ng-if="(loginForm.email.$touched || loginForm.$submitted) && loginForm.email.$invalid">
+                                        <span class="text-danger" ng-message="email">Please enter valid email address</span>
+                                        <span class="text-danger" ng-message="required">Email is required</span>
+                                </span>
+                        </div>
+                    </div>
+
+                    <!-- Profile pic -->
+                    <div class="form-group mb-15"
+                         ng-class='{"has-error": loginForm.profile_pic.$invalid && (loginForm.profile_pic.$touched || loginForm.$submitted),"has-success": loginForm.profile_pic.$valid && loginForm.$submitted}'>
+                        <label class="col-sm-3 control-label">Profile Pic</label>
+                        <div class="col-sm-3">
+                            <div class="thumbnail">
+                                <img ng-src="{{user.profile_pic_url ? user.profile_pic_url : 'assets/img/avatar.jpeg'}}" alt="user image">
+                                <div class="caption text-center">
+
+                                    <div ngf-select
+                                         ng-model="files"
+                                         ngf-change="uploadFile($files)"
+                                         class="drop-box drag-drop-container cursor-hover text-center border border-lg border-dashed p-20 cursor-pointer"
+                                         ngf-drag-over-class="dragover" ngf-multiple="false" ngf-allow-dir="false"
+                                         accept="image/*">
+                                        <button class="btn btn-primary btn-sm btn-block" type="button">Upload</button>
+                                        <!--<span class="clearfix small help-block">*Only image files are allowed</span>-->
+                                        <!--<span class="help-block text-center pt-10">Accepted formats: gif, png, jpg. Max file size 2Mb</span>-->
+                                    </div>
+                                    <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- University -->
+                    <div class="form-group mb-15"
+                         ng-class='{"has-error": loginForm.university.$invalid && (loginForm.university.$touched || loginForm.$submitted),"has-success": loginForm.university.$valid && loginForm.$submitted}'>
+                        <label for="university" class="col-sm-3 control-label">University</label>
+                        <div class="col-sm-8">
+                            <select class="form-control" id='university' name="university" required="required" ng-model="user.university_id"
+                                    ng-options="u.id as u.name for u in metaData.universities">
+                                <option value="">Select University</option>
+                            </select>
+                            <span class="help-block" ng-messages="loginForm.university.$error"
+                                  ng-if="(loginForm.university.$touched || loginForm.$submitted) && loginForm.university.$invalid">
+                                    <span class="text-danger" ng-message="required">Please select</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Major -->
+                    <div class="form-group mb-15"
+                         ng-class='{"has-error": loginForm.major.$invalid && (loginForm.major.$touched || loginForm.$submitted),"has-success": loginForm.major.$valid && loginForm.$submitted}'>
+                        <label for="major" class="col-sm-3 control-label">Major</label>
+                        <div class="col-sm-8">
+                            <select class="form-control" id='major' name="major" required="required" ng-model="user.stream_id"
+                                    ng-options="m.id as m.name for m in metaData.streams">
+                                <option value="">Select Major</option>
+                            </select>
+                            <span class="help-block" ng-messages="loginForm.major.$error"
+                                  ng-if="(loginForm.major.$touched || loginForm.$submitted) && loginForm.major.$invalid">
+                                    <span class="text-danger" ng-message="required">Please select</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Year of graduation -->
+                    <div class="form-group mb-15"
+                         ng-class='{"has-error": loginForm.year_of_graduation.$invalid && (loginForm.year_of_graduation.$touched || loginForm.$submitted),"has-success": loginForm.year_of_graduation.$valid && loginForm.$submitted}'>
+                        <label for="year_of_graduation" class="col-sm-3 control-label">Select Year Of Graduation</label>
+                        <div class="col-sm-8">
+                            <select class="form-control" id='year_of_graduation' name="year_of_graduation" required="required" ng-model="user.year_of_graduation"
+                                    ng-options="y as y for y in metaData.year_of_graduation">
+                                <option value="">Select Year Of Graduation</option>
+                            </select>
+                            <span class="help-block" ng-messages="loginForm.year_of_graduation.$error"
+                                  ng-if="(loginForm.year_of_graduation.$touched || loginForm.$submitted) && loginForm.year_of_graduation.$invalid">
+                                    <span class="text-danger" ng-message="required">Please select</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Passion -->
+                    <div class="form-group mb-15"
+                         ng-class='{"has-error": loginForm.passion.$invalid && (loginForm.passion.$touched || loginForm.$submitted),"has-success": loginForm.passion.$valid && loginForm.$submitted}'>
+                        <label for="passion" class="col-sm-3 control-label">Passion</label>
+                        <div class="col-sm-8">
+                            <textarea name="passion" id="passion" cols="30" rows="2" class="form-control" ng-model="user.passion" placeholder="What is your passion?" required="required" ng-minlength="3" ng-maxlength="300"></textarea>
+                            <span class="help-block" ng-messages="loginForm.passion.$error"
+                                  ng-if="(loginForm.passion.$touched || loginForm.$submitted) && loginForm.passion.$invalid">
+                                        <span class="text-danger" ng-message="required">Passion is required</span>
+                                    <span class="text-danger" ng-message="minlength">Min 3 chars is required</span>
+                                        <span class="text-danger" ng-message="maxlength">Max 300 chars</span>
+                                </span>
+                        </div>
+                    </div>
+
+                    <!-- Verifiers -->
+                    <div class="form-group mb-15">
+                        <label for="passion" class="col-sm-3 control-label">Verifiers</label>
+                        <div class="col-sm-8">
+                            <div class="clearfix">
+                                <div class="col-md-6 col-sm-6" ng-repeat="row in user.verifiers track by $index" style="padding: 0;" ng-if="!!row.id">
+                                    <div class="clearfix verifier-wrapper">
+                                        <div class="pull-left designation-icon-wrapper">
+                                            <span class="btn btn-primary pull-left" uib-tooltip="{{row.designation}}" title="{{row.designation}}">{{row.designation.substring(0, 1)}}</span>
+                                        </div>
+                                        <div class="pull-right verification-status-wrapper" uib-tooltip="{{row.designation}}" title="{{row.designation}}">
+                                            <!--<i class="fa fa-check-circle text-success"></i>-->
+                                            <i class="fa fa-info-circle text-info"></i>
+                                            <!--<i class="fa fa-exclamation-triangle text-danger"></i>-->
+                                        </div>
+                                        <div class="pull-left verifier-name-wrapper">
+                                            <div>{{row.email}}
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="clearfix row form-group" ng-if="!row.id" ng-repeat="row in user.verifiers track by $index" style="padding: 10px 5px; margin: 15px 0; border: 1px solid #efefef;">
+                                <ng-form name="verifierForm">
+                                    <div class="col-md-6" ng-class='{"has-error": verifierForm["verifier_email{{$index}}"].$invalid && (verifierForm["verifier_email{{$index}}"].$touched || loginForm.$submitted),"has-success": verifierForm["verifier_email{{$index}}"].$valid}'>
+                                        <div class="clearfix">
+                                            <input class="form-control input-sm" type="email" name="verifier_email{{$index}}" ng-model="row.email" required="required"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="clearfix" style="margin-top: 5px;" ng-class='{"has-error": verifierForm["verifier_type{{$index}}"].$invalid && (verifierForm["verifier_type{{$index}}"].$touched || loginForm.$submitted),"has-success": verifierForm["verifier_email{{$index}}"].$valid}'>
+                                            <label class="i-checks i-checks-sm">
+                                                <input type="radio" value="professor" name="verifier_type{{$index}}" ng-model="row.designation" required="required" ng-disabled="!!row.id">
+                                                <i></i>Professor
+                                            </label>
+                                            <label class="i-checks i-checks-sm">
+                                                <input type="radio" value="classmate" name="verifier_type{{$index}}" ng-model="row.designation" required="required" ng-disabled="!!row.id">
+                                                <i></i>Classmate
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button class="btn btn-primary btn-sm btn-round" uib-tooltip="Remove" title="Remove" type="button" ng-if="!row.id" ng-click="removeVerifierRow($index)"><i class="fa fa-trash-o"/></button>
+                                    </div>
+                                </ng-form>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="button" class="btn btn-primary btn-sm" ng-click="addVerifierRow()" style="margin-right: 15px;"><i class="fa fa-plus-circle"/>&nbsp;Add Verifier</button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary col-md-3 btn-lg mt-20" style="float: none;" ng-disabled="loginForm.$invalid">Update Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
